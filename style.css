@@ -1,0 +1,68 @@
+body {
+    margin: 20px;
+    background-color: #e8e3d8;
+}
+
+img {
+        width: 100%;
+object-fit: cover;
+}
+h1 {
+    text-align: center;
+}
+h2 {
+    margin-left: 30px;
+
+}
+.hero {
+    position: relative;
+    
+}
+.city-list {
+    position: absolute;
+    top: 100px;
+    left: 30px;
+}
+.city-list a {
+    display: block;
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: white;
+    text-decoration: none;
+    text-shadow: 2px 2px 4px black;
+}
+.city-list a:hover {
+    color: #b7410e;
+    text-shadow: 0 0 4px #b7410e;
+}
+#map {
+    height: 1000px;
+    width: 100%;
+}
+ p {
+    font-size: 26px;
+}
+.back-link {
+    font-size: 24px;
+    color: black;
+}
+.map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.map-tools {
+    display: flex;
+    gap: 10px;
+}
+.map-tools input {
+    width: 450px;
+    font-size: 18px;
+    padding: 10px;
+}
+
+.map-tools button {
+    font-size: 18px;
+    padding: 10px 20px;
+}
