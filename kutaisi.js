@@ -63,12 +63,33 @@ addSpotButton.addEventListener("click", function () {
 
             const lat = data[0].lat;
             const lng = data[0].lon;
+const shortAddress =
+    data[0].display_name.split(",")[1].trim() + " " +
+    data[0].display_name.split(",")[0].trim();
 
-            map.setView([lat, lng], 16);
+const newSpot = {
+    
+    address: shortAddress,
+    photo: "",
+    status: "Active",
+    description: "",
+    artist: "",
+    title: "",
+    lat: lat,
+    lng: lng
+};
 
-            L.marker([lat, lng])
-                .addTo(map)
-                .bindPopup("New Street Art Spot<br>" + data[0].display_name)
-                .openPopup();
-        });
+console.log(newSpot);
+
+map.setView([newSpot.lat, newSpot.lng], 16);
+
+L.marker([newSpot.lat, newSpot.lng])
+    .addTo(map)
+    .bindPopup(
+        "<b>New Street Art Spot</b><br>" +
+        newSpot.address +
+        "<br>Status: " + newSpot.status
+    )
+    .openPopup();
+});
 });
