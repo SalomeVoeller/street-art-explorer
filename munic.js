@@ -4,17 +4,7 @@ const munichBounds = [
     [48.0616, 11.3600],
     [48.2481, 11.7229]
 ];
-const spot1 = {
-    name: "Invader Munich",
-    address: "Munich",
-    lat: 48.1440,
-    lng: 11.5580
-};
-const spot2 = {
-    name: "Invader Munich 2",
-    lat: 48.137160,
-    lng: 11.576124
-};
+
 
 const map = L.map('map', {
     maxBounds: munichBounds,
@@ -25,13 +15,6 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-L.marker([spot1.lat, spot1.lng])
-    .addTo(map)
-    .bindPopup(spot1.name + "<br>" + spot1.address);
-
-L.marker([spot2.lat, spot2.lng])
-    .addTo(map)
-    .bindPopup(spot1.name + "<br>" + spot1.address);
 let searchMarker;
 
 const searchButton = document.getElementById("searchButton");
@@ -107,10 +90,38 @@ map.setView([newSpot.lat, newSpot.lng], 16);
 L.marker([newSpot.lat, newSpot.lng])
     .addTo(map)
     .bindPopup(
+        
         "<b>New Street Art Spot</b><br>" +
         newSpot.address +
-        "<br>Status: " + newSpot.status
+        "Photo:<br>" +
+        "<input id='spotPhoto' type='file'><br><br>" +
+
+        "Status:<br>" +
+        "<select id='spotStatus'>" +
+        "<option>active</option>" +
+        "<option>archived</option>" +
+        "</select><br><br>" +
+
+        "Description:<br>" +
+        "<textarea id='spotDescription' rows='3'></textarea><br><br>" +
+
+        "<button id='saveSpotButton'>Save Spot</button>"
     )
     .openPopup();
+const saveSpotButton = document.getElementById("saveSpotButton");
+
+saveSpotButton.addEventListener("click", function () {
+const status = document.getElementById("spotStatus").value;
+const description = document.getElementById("spotDescription").value;
+const photo = document.getElementById("spotPhoto").files[0];
+    const savedSpot = {
+        address: newSpot.address,
+        status: status,
+        description: description,
+        photo: photo
+    };
+
+    console.log(savedSpot);
+});   
 });
 });

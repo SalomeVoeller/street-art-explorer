@@ -87,10 +87,38 @@ console.log(newSpot);
 L.marker([newSpot.lat, newSpot.lng])
     .addTo(map)
     .bindPopup(
+        
         "<b>New Street Art Spot</b><br>" +
         newSpot.address +
-        "<br>Status: " + newSpot.status
+        "Photo:<br>" +
+        "<input id='spotPhoto' type='file'><br><br>" +
+
+        "Status:<br>" +
+        "<select id='spotStatus'>" +
+        "<option>active</option>" +
+        "<option>archived</option>" +
+        "</select><br><br>" +
+
+        "Description:<br>" +
+        "<textarea id='spotDescription' rows='3'></textarea><br><br>" +
+
+        "<button id='saveSpotButton'>Save Spot</button>"
     )
     .openPopup();
+const saveSpotButton = document.getElementById("saveSpotButton");
+
+saveSpotButton.addEventListener("click", function () {
+const status = document.getElementById("spotStatus").value;
+const description = document.getElementById("spotDescription").value;
+const photo = document.getElementById("spotPhoto").files[0];
+    const savedSpot = {
+        address: newSpot.address,
+        status: status,
+        description: description,
+        photo: photo
+    };
+
+    console.log(savedSpot);
+});   
 });
 });
