@@ -1,5 +1,3 @@
-
-
 const munichBounds = [
     [48.0616, 11.3600],
     [48.2481, 11.7229]
@@ -16,7 +14,52 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 let searchMarker;
+const supabaseUrl = "https://aejefukbifnyolukauol.supabase.co";
+const supabaseKey = "sb_publishable_r1k5crvDt1xB4niYbAVeCA_Ud2JMl2e";
 
+const supabaseClient = window.supabase.createClient(
+    supabaseUrl,
+    supabaseKey
+);
+async function testSupabase() {
+
+    const { data, error } = await supabaseClient
+        .from("spots")
+        .select("*");
+
+    console.log("DATA:", data);
+    console.log("ERROR:", error);
+}
+async function loadSpots() {
+    const { data, error } = await supabaseClient
+        .from("spots")
+        .select("*")
+        .eq("city", "Munich");
+
+    if (error) {
+        console.log(error);
+        return;
+    }
+
+    data.forEach(function (spot) {
+        const marker = L.marker([spot.lat, spot.lng])
+            .addTo(map);
+
+        marker.bindTooltip(
+            spot.address + "<br>" +
+            "<img src='" + spot.photo_url + "' width='120'>"
+        );
+
+        marker.bindPopup(
+            "<b>Street Art Spot</b><br>" +
+            spot.address +
+            "<br>Status: " + spot.status +
+            "<br><br><img src='" + spot.photo_url + "' width='200'>"
+        );
+    });
+}
+loadSpots(); 
+testSupabase();
 const searchButton = document.getElementById("searchButton");
 const addSpotButton = document.getElementById("addSpotButton");
 searchButton.addEventListener("click", function () {
@@ -110,18 +153,71 @@ L.marker([newSpot.lat, newSpot.lng])
     .openPopup();
 const saveSpotButton = document.getElementById("saveSpotButton");
 
-saveSpotButton.addEventListener("click", function () {
+saveSpotButton.addEventListener("click", async function () {
 const status = document.getElementById("spotStatus").value;
 const description = document.getElementById("spotDescription").value;
 const photo = document.getElementById("spotPhoto").files[0];
-    const savedSpot = {
-        address: newSpot.address,
-        status: status,
-        description: description,
-        photo: photo
-    };
+if (!photo) {
+    alert("Please select a photo");
+    return;
+}
 
-    console.log(savedSpot);
+const cleanFileName = photo.name
+    .replaceAll(" ", "_")
+    .replaceAll("ö", "oe")
+    .replaceAll("ä", "ae")
+    .replaceAll("ü", "ue")
+    .replaceAll("ß", "ss");
+
+const fileName = Date.now() + "_" + cleanFileName;
+
+const { data: uploadData, error: uploadError } = await supabaseClient.storage
+    .from("street-art-photos")
+    .upload(fileName, photo);
+
+console.log(uploadData);
+console.log(uploadError);
+
+ const publicUrl = supabaseClient.storage
+    .from("street-art-photos")
+    .getPublicUrl(uploadData.path).data.publicUrl;
+
+console.log(publicUrl);   
+const savedSpot = {
+    city: "Munich",
+    address: newSpot.address,
+    status: status,
+    description: description,
+    lat: newSpot.lat,
+    lng: newSpot.lng,
+    photo_url: publicUrl
+};
+const { data: insertData, error: insertError } = await supabaseClient
+    .from("spots")
+    .insert([savedSpot]);
+if (insertError) {
+    alert("Spot could not be saved.");
+    console.log(insertError);
+    return;
+}
+
+map.closePopup();
+const savedMarker = L.marker([savedSpot.lat, savedSpot.lng])
+    .addTo(map);
+
+savedMarker.bindTooltip(
+    savedSpot.address + "<br>" +
+    "<img src='" + savedSpot.photo_url + "' width='120'>"
+);
+
+savedMarker.bindPopup(
+    "<b>Street Art Spot</b><br>" +
+    savedSpot.address +
+    "<br>Status: " + savedSpot.status +
+    "<br><br><img src='" + savedSpot.photo_url + "' width='200'>"
+);
+console.log(insertData);
+console.log(insertError);
 });   
 });
 });
